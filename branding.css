@@ -20,6 +20,9 @@
   height: 54px;
   object-fit: contain;
   flex: 0 0 auto;
+  border-radius: 14px;
+  background: var(--brand-white);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
 }
 
 .brand__name,
@@ -55,6 +58,8 @@
   width: min(64%, 260px);
   height: auto;
   object-fit: contain;
+  border-radius: 28px;
+  box-shadow: 0 24px 60px rgba(0, 43, 91, 0.2);
 }
 
 .founder-avatar--brand {
@@ -84,6 +89,7 @@
   height: 72px;
   margin: 0;
   object-fit: contain;
+  border-radius: 18px;
 }
 
 @media (max-width: 1040px) {

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://seu-usuario.github.io/jsb-smart-services/sitemap.xml
+Sitemap: https://jsbsmartservices.com.br/sitemap.xml

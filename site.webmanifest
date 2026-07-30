@@ -1,0 +1,17 @@
+{
+  "name": "JSB Smart Services",
+  "short_name": "JSB",
+  "description": "Pessoas, processos e tecnologia conectados para gerar resultados.",
+  "lang": "pt-BR",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#002b5b",
+  "icons": [
+    {
+      "src": "/assets/jsb-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
