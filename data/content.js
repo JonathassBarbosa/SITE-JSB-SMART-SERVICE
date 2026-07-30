@@ -7,22 +7,22 @@ window.jsbContent = {
   ],
   services: [
     {
-      icon: '◌',
+      icon: 'process',
       title: 'Diagnóstico de processos',
       description: 'Mapeamento de fluxos, identificação de retrabalho, riscos, falhas de comunicação e gargalos operacionais.'
     },
     {
-      icon: '⬢',
+      icon: 'automation',
       title: 'Automação e webapps',
       description: 'Desenvolvimento de MVPs, validadores, painéis, formulários inteligentes e ferramentas para rotinas administrativas.'
     },
     {
-      icon: '⟡',
+      icon: 'training',
       title: 'Implantação e T&D',
       description: 'Planejamento de implantação, materiais, treinamento das equipes, acompanhamento da adoção e melhoria contínua.'
     },
     {
-      icon: '↺',
+      icon: 'consulting',
       title: 'Consultoria sob medida',
       description: 'Soluções adaptadas à realidade, ao orçamento e ao estágio tecnológico de cada empresa.'
     }
@@ -47,14 +47,14 @@ window.jsbContent = {
     'Treinamento e documentação'
   ],
   socialLinks: [
-    { label: 'LinkedIn', url: '' },
-    { label: 'GitHub', url: '' },
-    { label: 'E-mail', url: '' }
+    { label: 'Instagram', url: 'https://www.instagram.com/p/DbHkqi-CmFH/?igsh=MWR0dmgxMXYydnpyNQ==' },
+    { label: 'GitHub', url: 'https://github.com/JonathassBarbosa' },
+    { label: 'WhatsApp', url: 'https://wa.me/5562984853703' }
   ],
   contactConfig: {
-    whatsappNumber: '',
+    whatsappNumber: '5562984853703',
     professionalEmail: '',
-    linkedinUrl: '',
-    githubUrl: ''
+    instagramUrl: 'https://www.instagram.com/p/DbHkqi-CmFH/?igsh=MWR0dmgxMXYydnpyNQ==',
+    githubUrl: 'https://github.com/JonathassBarbosa'
   }
 };

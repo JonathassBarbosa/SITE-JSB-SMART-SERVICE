@@ -32,6 +32,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const formInputs = form ? Array.from(form.querySelectorAll('input, textarea')) : [];
   const navLinks = Array.from(document.querySelectorAll('.site-nav a[href^="#"]'));
   const sections = Array.from(document.querySelectorAll('main section[id]'));
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let modalTrigger = null;
+  let scrollFrame = null;
+
+  const icons = {
+    process: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h10M4 12h16M4 18h10"/><circle cx="17" cy="6" r="3"/><circle cx="17" cy="18" r="3"/></svg>',
+    automation: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7h8M7 12h10M9 17h6"/><path d="M5 4h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z"/></svg>',
+    training: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 7 9-4 9 4-9 4-9-4Z"/><path d="M7 9v6c3 2 7 2 10 0V9M21 8v7"/></svg>',
+    consulting: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v12H8l-4 4V4Z"/><path d="M8 8h8M8 12h5"/></svg>'
+  };
+
+  const escapeHtml = (value) =>
+    String(value)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
 
   const setStatus = (message, isError = false) => {
     if (statusEl) {
@@ -52,6 +70,8 @@ document.addEventListener('DOMContentLoaded', () => {
         `
       )
       .join('');
+
+    if (prefersReducedMotion) return;
 
     requestAnimationFrame(() => {
       heroStats.querySelectorAll('[data-value]').forEach((element) => {
@@ -77,9 +97,9 @@ document.addEventListener('DOMContentLoaded', () => {
       .map(
         (service) => `
           <article class="service-card">
-            <div class="service-card__icon" aria-hidden="true">${service.icon}</div>
-            <h3>${service.title}</h3>
-            <p>${service.description}</p>
+            <div class="service-card__icon" aria-hidden="true">${icons[service.icon] || ''}</div>
+            <h3>${escapeHtml(service.title)}</h3>
+            <p>${escapeHtml(service.description)}</p>
           </article>
         `
       )
@@ -88,12 +108,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const renderCompetencies = () => {
     if (!competenciesList || !content.competencies?.length) return;
-    competenciesList.innerHTML = content.competencies.map((item) => `<span class="chip">${item}</span>`).join('');
+    competenciesList.innerHTML = content.competencies.map((item) => `<span class="chip">${escapeHtml(item)}</span>`).join('');
   };
 
   const renderTechnologies = () => {
     if (!technologiesList || !content.technologies?.length) return;
-    technologiesList.innerHTML = content.technologies.map((item) => `<span class="chip">${item}</span>`).join('');
+    technologiesList.innerHTML = content.technologies.map((item) => `<span class="chip">${escapeHtml(item)}</span>`).join('');
   };
 
   const renderSocialLinks = () => {
@@ -101,9 +121,9 @@ document.addEventListener('DOMContentLoaded', () => {
     socialLinks.innerHTML = content.socialLinks
       .map((item) => {
         if (!item.url) {
-          return `<li><span>${item.label}</span></li>`;
+          return '';
         }
-        return `<li><a href="${item.url}" target="_blank" rel="noopener noreferrer">${item.label}</a></li>`;
+        return `<li><a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.label)}</a></li>`;
       })
       .join('');
   };
@@ -124,15 +144,15 @@ document.addEventListener('DOMContentLoaded', () => {
         (project) => `
           <article class="project-card">
             <div class="project-card__top">
-              <span class="project-card__meta">${project.category}</span>
-              <span class="project-card__meta">${project.status}</span>
+              <span class="project-card__meta">${escapeHtml(project.category)}</span>
+              <span class="project-card__meta">${escapeHtml(project.status)}</span>
             </div>
-            <h3>${project.title}</h3>
-            <p><strong>Problema:</strong> ${project.problem}</p>
-            <p><strong>Solução:</strong> ${project.solution}</p>
-            <p><strong>Recursos:</strong> ${project.features.join(' • ')}</p>
+            <h3>${escapeHtml(project.title)}</h3>
+            <p class="project-card__highlight">${escapeHtml(project.highlight || project.solution)}</p>
+            <p><strong>Problema:</strong> ${escapeHtml(project.problem)}</p>
+            <p><strong>Solução:</strong> ${escapeHtml(project.solution)}</p>
             <div class="chip-list">
-              ${project.technologies.map((item) => `<span class="chip">${item}</span>`).join('')}
+              ${project.technologies.map((item) => `<span class="chip">${escapeHtml(item)}</span>`).join('')}
             </div>
             <div class="project-card__actions">
               ${buildLinkButton(project.demoUrl, 'Ver demonstração')}
@@ -152,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!url) {
       return `<button class="button button--ghost-dark" type="button" disabled>Disponível em breve</button>`;
     }
-    return `<a class="button button--primary" href="${url}" target="_blank" rel="noopener noreferrer">${label}</a>`;
+    return `<a class="button button--primary" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>`;
   };
 
   const renderFilters = () => {
@@ -160,14 +180,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const categories = ['Todos', ...new Set(projects.map((project) => project.category))];
     filterGroup.innerHTML = categories
       .map(
-        (category) => `<button class="filter-button ${category === 'Todos' ? 'is-active' : ''}" type="button" data-category="${category}">${category}</button>`
+        (category) => `<button class="filter-button ${category === 'Todos' ? 'is-active' : ''}" type="button" data-category="${escapeHtml(category)}" aria-pressed="${category === 'Todos'}">${escapeHtml(category)}</button>`
       )
       .join('');
 
     filterGroup.querySelectorAll('.filter-button').forEach((button) => {
       button.addEventListener('click', () => {
         filterGroup.querySelectorAll('.filter-button').forEach((item) => item.classList.remove('is-active'));
+        filterGroup.querySelectorAll('.filter-button').forEach((item) => item.setAttribute('aria-pressed', 'false'));
         button.classList.add('is-active');
+        button.setAttribute('aria-pressed', 'true');
         renderProjects(button.dataset.category);
       });
     });
@@ -177,11 +199,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const project = projects.find((item) => item.id === projectId);
     if (!project) return;
 
+    modalTrigger = document.activeElement;
     modalTitle.textContent = project.title;
     modalCategory.textContent = project.category;
     modalProblem.textContent = project.problem;
     modalSolution.textContent = project.solution;
-    modalFeatures.innerHTML = project.features.map((feature) => `<li>${feature}</li>`).join('');
+    modalFeatures.innerHTML = project.features.map((feature) => `<li>${escapeHtml(feature)}</li>`).join('');
     modalStatus.textContent = project.status;
     modalLinks.innerHTML = `
       ${buildLinkButton(project.demoUrl, 'Ver demonstração')}
@@ -191,12 +214,14 @@ document.addEventListener('DOMContentLoaded', () => {
     modal.hidden = false;
     modalBackdrop.hidden = false;
     document.body.style.overflow = 'hidden';
+    modalClose?.focus();
   };
 
   const closeModal = () => {
     modal.hidden = true;
     modalBackdrop.hidden = true;
     document.body.style.overflow = '';
+    if (modalTrigger instanceof HTMLElement) modalTrigger.focus();
   };
 
   const updateActiveLink = () => {
@@ -250,15 +275,6 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    const confirmMessage = channel === 'whatsapp'
-      ? 'Deseja abrir o WhatsApp com os dados do formulário?'
-      : 'Deseja abrir o cliente de e-mail com os dados do formulário?';
-
-    if (!window.confirm(confirmMessage)) {
-      setStatus('Envio cancelado.');
-      return;
-    }
-
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
     const phone = document.getElementById('phone').value.trim();
@@ -309,6 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderProjects();
   updateActiveLink();
   toggleFloatingButtons();
+  if (submitEmail && contactConfig.professionalEmail) submitEmail.hidden = false;
 
   if (menuToggle) {
     menuToggle.addEventListener('click', () => {
@@ -325,8 +342,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   window.addEventListener('scroll', () => {
-    updateActiveLink();
-    toggleFloatingButtons();
+    if (scrollFrame) return;
+    scrollFrame = requestAnimationFrame(() => {
+      updateActiveLink();
+      toggleFloatingButtons();
+      scrollFrame = null;
+    });
   });
 
   window.addEventListener('resize', () => {
@@ -334,6 +355,13 @@ document.addEventListener('DOMContentLoaded', () => {
       document.body.classList.remove('menu-open');
       menuToggle?.setAttribute('aria-expanded', 'false');
     }
+  });
+
+  document.addEventListener('click', (event) => {
+    if (!document.body.classList.contains('menu-open')) return;
+    if (siteNav?.contains(event.target) || menuToggle?.contains(event.target)) return;
+    document.body.classList.remove('menu-open');
+    menuToggle?.setAttribute('aria-expanded', 'false');
   });
 
   formInputs.forEach((field) => {
@@ -352,11 +380,20 @@ document.addEventListener('DOMContentLoaded', () => {
   modalBackdrop?.addEventListener('click', closeModal);
   modalClose?.addEventListener('click', closeModal);
   document.addEventListener('keydown', (event) => {
+    if (modal?.hidden) return;
     if (event.key === 'Escape') closeModal();
-  });
-
-  whatsappFloat?.addEventListener('click', (event) => {
-    event.preventDefault();
-    submitContact('whatsapp');
+    if (event.key === 'Tab') {
+      const focusable = Array.from(modal.querySelectorAll('a[href], button:not([disabled])'));
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
   });
 });

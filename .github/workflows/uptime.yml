@@ -1,0 +1,16 @@
+name: Disponibilidade do domínio
+
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirmar resposta do site
+        run: curl --fail --silent --show-error --location --max-time 20 https://jsbsmartservices.com.br/ > /dev/null

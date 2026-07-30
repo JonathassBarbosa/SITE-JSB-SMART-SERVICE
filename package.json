@@ -1,0 +1,12 @@
+{
+  "name": "site-jsb-smart-service",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check script.js && node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
