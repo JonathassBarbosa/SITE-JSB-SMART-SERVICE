@@ -65,9 +65,8 @@
 .founder-photo {
   width: 100%;
   aspect-ratio: 902 / 1600;
-  max-height: 700px;
   overflow: hidden;
-  background: var(--brand-navy);
+  background: transparent;
   border-radius: 22px;
   margin-bottom: 1.35rem;
   box-shadow: 0 18px 46px rgba(0, 43, 91, 0.16);
